@@ -6,12 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".presentation.screen.connection.ConnectionsFragment">
 
-    <include
-        android:id="@+id/loaderInclude"
-        layout="@layout/loader" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerConnections"
+        android:id="@+id/rvConnections"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -25,6 +21,16 @@
         android:layout_height="wrap_content"
         android:text="@string/log_out"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

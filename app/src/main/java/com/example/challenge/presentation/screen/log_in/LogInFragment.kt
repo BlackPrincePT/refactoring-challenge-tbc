@@ -1,76 +1,48 @@
 package com.example.challenge.presentation.screen.log_in
 
-import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.example.challenge.data.mapper.base.BaseFragment
 import com.example.challenge.databinding.FragmentLogInBinding
-import com.example.challenge.presentation.event.log_in.LogInEvent
-import com.example.challenge.presentation.extension.showSnackBar
-import com.example.challenge.presentation.state.log_in.LogInState
+import com.example.challenge.presentation.core.BaseFragment
+import com.example.challenge.presentation.core.toStringResId
+import com.example.challenge.presentation.util.collectLatest
+import com.example.challenge.presentation.util.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LogInFragment : BaseFragment<FragmentLogInBinding>(FragmentLogInBinding::inflate) {
 
     private val viewModel: LogInViewModel by viewModels()
 
-    override fun bind() {
-
+    override fun setup() {
+        subscribeToViewStateUpdates()
     }
 
-    override fun bindViewActionListeners() {
-        binding.btnLogIn.setOnClickListener {
-            logIn()
+    override fun listeners() = with(binding) {
+        btnLogin.setOnClickListener {
+            login()
         }
     }
 
-    override fun bindObserves() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.logInState.collect {
-                    handleLogInState(logInState = it)
-                }
+    private fun login() = with(binding) {
+        val enteredEmail = etEmail.text.toString()
+        val enteredPassword = etPassword.text.toString()
+
+        viewModel.onEvent(LogInUiEvent.Login(email = enteredEmail, password = enteredPassword))
+    }
+
+
+    private fun subscribeToViewStateUpdates() = with(binding) {
+        collectLatest(viewModel.uiState) { state ->
+            progressBar.isVisible = state.isLoading
+
+            state.errorMessage?.getContentIfNotHandled()?.let {
+                root.showSnackBar(requireContext().getString(it.toStringResId()))
             }
-        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiEvent.collect {
-                    handleNavigationEvents(event = it)
-                }
-            }
-        }
-    }
-
-    private fun logIn() {
-        viewModel.onEvent(
-            LogInEvent.LogIn(
-                email = binding.etEmail.text.toString(),
-                password = binding.etPassword.text.toString()
-            )
-        )
-    }
-
-    private fun handleLogInState(logInState: LogInState) {
-        binding.loaderInclude.loaderContainer.visibility =
-            if (logInState.isLoading) View.VISIBLE else View.GONE
-
-        logInState.errorMessage?.let {
-            binding.root.showSnackBar(message = it)
-            viewModel.onEvent(LogInEvent.ResetErrorMessage)
-        }
-    }
-
-    private fun handleNavigationEvents(event: LogInViewModel.LogInUiEvent) {
-        when (event) {
-            is LogInViewModel.LogInUiEvent.NavigateToConnections -> findNavController().navigate(
-                LogInFragmentDirections.actionLogInFragmentToFriendsFragment()
-            )
+            if (state.shouldNavigateToConnections)
+                findNavController().navigate(LogInFragmentDirections.logInToConnections())
         }
     }
 }

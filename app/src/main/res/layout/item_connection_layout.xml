@@ -23,4 +23,5 @@
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imvProfile"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

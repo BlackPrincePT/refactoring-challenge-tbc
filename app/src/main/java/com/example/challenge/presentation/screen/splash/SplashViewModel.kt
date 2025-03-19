@@ -2,34 +2,33 @@ package com.example.challenge.presentation.screen.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.challenge.domain.usecase.datastore.GetTokenUseCase
-import com.example.challenge.presentation.screen.log_in.LogInViewModel
+import com.example.challenge.domain.cache.PreferenceKeys
+import com.example.challenge.domain.usecase.cache.ObserveCachedDataUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(private val getTokenUseCase: GetTokenUseCase) :
-    ViewModel() {
+class SplashViewModel @Inject constructor(
+    private val observeCache: ObserveCachedDataUseCase
+) : ViewModel() {
 
-    private val _uiEvent = MutableSharedFlow<SplashUiEvent>()
-    val uiEvent: SharedFlow<SplashUiEvent> get() = _uiEvent
+    private val _hasSavedSession = Channel<Boolean>()
+    val hasSavedSession = _hasSavedSession.receiveAsFlow()
 
     init {
         readSession()
     }
 
-    private fun readSession() {
-        viewModelScope.launch {
-            getTokenUseCase().collect {
-                if (it.isEmpty())
-                    _uiEvent.emit(SplashUiEvent.NavigateToLogIn)
+    private fun readSession() = viewModelScope.launch {
+        observeCache(key = PreferenceKeys.TOKEN)
+            .collect { token ->
+                if (token.isNullOrEmpty())
+                    _hasSavedSession.send(element = false)
                 else
-                    _uiEvent.emit(SplashUiEvent.NavigateToConnections)
+                    _hasSavedSession.send(element = true)
             }
-        }
     }
 }

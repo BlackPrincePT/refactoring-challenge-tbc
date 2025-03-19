@@ -1,11 +1,32 @@
 <resources>
     <string name="app_name">Challenge</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
     <string name="log_in">Log In</string>
     <string name="enter_email">Enter Email</string>
     <string name="password">Password</string>
-    <android name="test">Vai sacodao android developero</android>
     <string name="fields_are_not_valid">Fields are not valid!</string>
     <string name="log_out">Log Out</string>
+    <string name="hello_tbc">Hello TBC!</string>
+
+    <!-- Network Error Strings -->
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_timeout">The request timed out.</string>
+    <string name="error_no_connection">No network connection available.</string>
+    <string name="error_bad_request">Bad request.</string>
+    <string name="error_unauthorized">Unauthorized access.</string>
+    <string name="error_forbidden">Access is forbidden.</string>
+    <string name="error_not_found">Resource not found.</string>
+    <string name="error_method_not_allowed">Method not allowed.</string>
+    <string name="error_conflict">Conflict occurred.</string>
+    <string name="error_internal_server_error">Internal server error.</string>
+    <string name="error_bad_gateway">Bad gateway.</string>
+    <string name="error_service_unavailable">Service is unavailable.</string>
+    <string name="error_gateway_timeout">Gateway timeout occurred.</string>
+
+    <!-- Validation Error Strings for Email -->
+    <string name="error_email_blank">Email cannot be blank.</string>
+    <string name="error_email_invalid_format">Email format is invalid.</string>
+
+    <!-- Validation Error Strings for Password -->
+    <string name="error_password_blank">Password cannot be blank.</string>
 </resources>
